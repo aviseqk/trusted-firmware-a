@@ -106,6 +106,7 @@ int parse_optee_header(entry_point_info_t *header_ep,
 		image_info_t *paged_image_info)
 
 {
+	NOTICE("BL2: entered parse_optee_header\n");
 	optee_header_t *header;
 	uint32_t num;
 	int ret;
@@ -147,8 +148,12 @@ int parse_optee_header(entry_point_info_t *header_ep,
 #else
 		header_ep->args.arg0 = MODE_RW_32;
 #endif
+		NOTICE("BL2: returning 0 because invalid header\n");
+
 		return 0;
 	}
+
+	NOTICE("BL2: parse optee image loop reached\n");
 
 	/* Parse OPTEE image */
 	for (num = 0U; num < header->nb_images; num++) {

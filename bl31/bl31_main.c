@@ -143,6 +143,8 @@ void __no_pauth bl31_main(u_register_t arg0, u_register_t arg1, u_register_t arg
 	}
 #endif
 
+	NOTICE("BL31: before GIC\n");
+
 #if USE_GIC_DRIVER
 	/*
 	 * Initialize the GIC driver and this core's GIC interface before fully
@@ -154,25 +156,31 @@ void __no_pauth bl31_main(u_register_t arg0, u_register_t arg1, u_register_t arg
 	gic_cpuif_enable(core_pos);
 #endif /* USE_GIC_DRIVER */
 
+	NOTICE("BL31: after GIC\n");
+
+	NOTICE("BL31: before platform setup\n");
+
 	/* Perform platform setup in BL31 */
 	bl31_platform_setup();
+	NOTICE("BL31: after platform setup\n");
 
 #if USE_DSU_DRIVER
 	dsu_driver_init(&plat_dsu_data);
 #endif
-
+	NOTICE("BL31: before lib init\n");
 	/* Initialise helper libraries */
 	bl31_lib_init();
+	NOTICE("BL31: after lib init\n");
 
 #if EL3_EXCEPTION_HANDLING
 	INFO("BL31: Initialising Exception Handling Framework\n");
 	ehf_init();
 #endif
-
+	NOTICE("BL31: bl31_main(): 1\n");
 	/* Initialize the runtime services e.g. psci. */
 	INFO("BL31: Initializing runtime services\n");
 	runtime_svc_init();
-
+	NOTICE("BL31: bl31_main(): 2\n");
 	/*
 	 * All the cold boot actions on the primary cpu are done. We now need to
 	 * decide which is the next image and how to execute it.
@@ -191,14 +199,16 @@ void __no_pauth bl31_main(u_register_t arg0, u_register_t arg1, u_register_t arg
 	 */
 	if (bl32_init != NULL) {
 		INFO("BL31: Initializing BL32\n");
-
+		NOTICE("BL31: bl31_main(): 3\n");
 		console_flush();
 		int32_t rc = (*bl32_init)();
 
 		if (rc == 0) {
 			WARN("BL31: BL32 initialization failed\n");
 		}
+		NOTICE("BL31: bl31_main(): 4\n");
 	}
+	NOTICE("BL31: bl31_main(): 5\n");
 
 	/*
 	 * If RME is enabled and init hook is registered, initialize RMM
@@ -222,6 +232,7 @@ void __no_pauth bl31_main(u_register_t arg0, u_register_t arg1, u_register_t arg
 	 * corresponding to the desired security state after the next ERET.
 	 */
 	bl31_prepare_next_image_entry();
+	NOTICE("BL31: bl31_main(): 6\n");
 
 	/*
 	 * Perform any platform specific runtime setup prior to cold boot exit

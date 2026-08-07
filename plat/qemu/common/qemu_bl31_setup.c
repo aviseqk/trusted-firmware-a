@@ -331,8 +331,12 @@ static void qemu_gpio_init(void)
 
 void bl31_platform_setup(void)
 {
+	NOTICE("BL31: bl31_platform_setup: before plat_qemu_gic_init\n");
 	plat_qemu_gic_init();
+	NOTICE("BL31: bl31_platform_setup: after plat_qemu_gic_init\n");
+	NOTICE("BL31: bl31_platform_setup: before qemu_gpio_init\n");
 	qemu_gpio_init();
+	NOTICE("BL31: bl31_platform_setup: after qemu_gpio_init\n");
 }
 
 unsigned int plat_get_syscnt_freq2(void)

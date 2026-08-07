@@ -259,10 +259,18 @@ static int32_t opteed_setup(void)
 static int32_t
 opteed_init_with_entry_point(entry_point_info_t *optee_entry_point)
 {
+	NOTICE("OPTEED SERVICE: 2\n");
 	uint32_t linear_id = plat_my_core_pos();
 	optee_context_t *optee_ctx = &opteed_sp_context[linear_id];
 	uint64_t rc;
 	assert(optee_entry_point);
+
+	NOTICE("BL32 PC    = 0x%lx\n", (unsigned long)optee_entry_point->pc);
+	NOTICE("BL32 SPSR  = 0x%x\n", optee_entry_point->spsr);
+	NOTICE("ARG0       = 0x%lx\n", optee_entry_point->args.arg0);
+	NOTICE("ARG1       = 0x%lx\n", optee_entry_point->args.arg1);
+	NOTICE("ARG2       = 0x%lx\n", optee_entry_point->args.arg2);
+	NOTICE("ARG3       = 0x%lx\n", optee_entry_point->args.arg3);
 
 	cm_init_my_context(optee_entry_point);
 
@@ -270,15 +278,18 @@ opteed_init_with_entry_point(entry_point_info_t *optee_entry_point)
 	 * Arrange for an entry into OPTEE. It will be returned via
 	 * OPTEE_ENTRY_DONE case
 	 */
+
+	NOTICE("OPTEED SERVICE: 3\n");
 	rc = opteed_synchronous_sp_entry(optee_ctx);
 	assert(rc != 0);
-
+	NOTICE("OPTEED SERVICE: 4\n");
 	return rc;
 }
 
 #if !OPTEE_ALLOW_SMC_LOAD
 static int32_t opteed_init(void)
 {
+	NOTICE("OPTEED SERVICE: 1\n");
 	entry_point_info_t *optee_entry_point;
 	/*
 	 * Get information about the OP-TEE (BL32) image. Its
